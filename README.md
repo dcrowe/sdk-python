@@ -15,17 +15,17 @@ from visual_regression_tracker_sdk import VisualRegressionTracker, Config
 ### Configure connection
 ```python
 config = Config(
-    // apiUrl - URL where backend is running 
-    apiUrl="http://localhost:4200",
+    # apiUrl - URL where backend is running 
+    apiUrl='http://localhost:4200',
 
-    // project - Project name or ID
-    project="Default project",
+    # project - Project name or ID
+    project='Default project',
 
-    // apiKey - User apiKey
-    apiKey="tXZVHX0EA4YQM1MGDD",
+    # apiKey - User apiKey
+    apiKey='tXZVHX0EA4YQM1MGDD',
 
-    // branch - Current git branch 
-    branchName="develop",
+    # branch - Current git branch 
+    branchName='develop',
 )
 
 vrt = VisualRegressionTracker(config)
@@ -33,29 +33,29 @@ vrt = VisualRegressionTracker(config)
 ### Send image
 ```python
 vrt.track(
-    // Name to be displayed
-    // Required
-    name="Image name",
+    # Name to be displayed
+    # Required
+    name='Image name',
 
-    // Base64 encoded string
-    // Required
+    # Base64 encoded string
+    # Required
     imageBase64=image,
 
-    // Allowed mismatch tollerance in %
-    // Optional
-    // Default: 1%
+    # Allowed mismatch tollerance in %
+    # Optional
+    # Default: 1%
     diffTollerancePercent=0,
 
-    // Optional
-    os="Mac",
+    # Optional
+    os='Mac',
 
-    // Optional
-    browser="Chrome",
+    # Optional
+    browser='Chrome',
 
-    // Optional
-    viewport="800x600",
+    # Optional
+    viewport='800x600',
 
-    // Optional
-    device="PC",
+    # Optional
+    device='PC',
 )
 ```
