@@ -11,6 +11,7 @@ pytest-cov = "*"
 pytest = "*"
 pytest-mock = "*"
 flake8 = "*"
+zipp = "==1.2.0"
 
 [pipenv]
 allow_prereleases = false
