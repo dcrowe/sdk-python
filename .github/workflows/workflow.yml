@@ -28,6 +28,6 @@ jobs:
         pip install pipenv
         pipenv install --dev --deploy --python ${{ matrix.python-version }}
     - name: Lint
-      run: pipenv run line
+      run: pipenv run lint
     - name: Test
       run: pipenv run test
