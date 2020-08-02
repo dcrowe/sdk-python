@@ -21,7 +21,11 @@ class VisualRegressionTracker:
             'project': self.config.project,
         }
 
-        result = _http_post_json(f'{self.config.apiUrl}/builds', data, self.headers)
+        result = _http_post_json(
+            f'{self.config.apiUrl}/builds',
+            data,
+            self.headers
+        )
         build = Build(**result)
 
         if build.id:
@@ -42,7 +46,11 @@ class VisualRegressionTracker:
             branchName=self.config.branchName,
         )
 
-        result = _http_post_json(f'{self.config.apiUrl}/test-runs', data, self.headers)
+        result = _http_post_json(
+            f'{self.config.apiUrl}/test-runs',
+            data,
+            self.headers
+        )
         result['status'] = TestRunStatus(result['status'])
         testRunResult = TestRunResult(**result)
 

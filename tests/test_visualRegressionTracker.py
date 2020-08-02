@@ -1,6 +1,7 @@
 import pytest
-from visual_regression_tracker_sdk import Config, VisualRegressionTracker, \
-    TestRun, TestRunResult, TestRunStatus, Build
+from visual_regression_tracker_sdk import \
+    Config, VisualRegressionTracker, \
+    TestRun, TestRunResult, TestRunStatus
 
 
 CONFIG = Config(
@@ -13,7 +14,9 @@ CONFIG = Config(
 
 @pytest.fixture
 def mock_post(mocker):
-    yield mocker.patch('visual_regression_tracker_sdk.visualRegressionTracker._http_post_json')
+    yield mocker.patch(
+        'visual_regression_tracker_sdk.visualRegressionTracker'
+        '._http_post_json')
 
 
 @pytest.fixture
@@ -40,7 +43,7 @@ def test__track__should_track_success(vrt, mocker):
     )
     vrt._startBuild = mocker.Mock()
     vrt._submitTestResult = mocker.Mock(return_value=testRunResult)
-    
+
     vrt.track(testRun)
 
     vrt._startBuild.assert_called_once()
@@ -66,7 +69,7 @@ def test__track__should_track_no_baseline(vrt, mocker):
     )
     vrt._startBuild = mocker.Mock()
     vrt._submitTestResult = mocker.Mock(return_value=testRunResult)
-    
+
     with pytest.raises(Exception, match='No baseline: url'):
         vrt.track(testRun)
 
@@ -90,7 +93,7 @@ def test__track__should_track_difference(vrt, mocker):
     )
     vrt._startBuild = mocker.Mock()
     vrt._submitTestResult = mocker.Mock(return_value=testRunResult)
-    
+
     with pytest.raises(Exception, match='Difference found: url'):
         vrt.track(testRun)
 
@@ -99,14 +102,14 @@ def test__startBuild__should_start_build(vrt, mock_post):
     buildId = '1312'
     projectId = 'asd'
 
-    mock_post.return_value = {'id':buildId, 'projectId':projectId}
+    mock_post.return_value = {'id': buildId, 'projectId': projectId}
 
     vrt._startBuild()
 
     mock_post.assert_called_once_with(
         f'{CONFIG.apiUrl}/builds',
-        {'branchName':CONFIG.branchName, 'project':CONFIG.project},
-        {'apiKey':CONFIG.apiKey},
+        {'branchName': CONFIG.branchName, 'project': CONFIG.project},
+        {'apiKey': CONFIG.apiKey},
     )
 
     assert vrt.buildId == buildId
@@ -114,14 +117,14 @@ def test__startBuild__should_start_build(vrt, mock_post):
 
 
 def test__startBuild__should_throw_if_no_build_id(vrt, mock_post):
-    mock_post.return_value = {'id':None, 'projectId':'projectId'}
+    mock_post.return_value = {'id': None, 'projectId': 'projectId'}
 
     with pytest.raises(Exception, match='Build id is not defined'):
         vrt._startBuild()
 
 
 def test__startBuild__should_throw_if_no_project_id(vrt, mock_post):
-    mock_post.return_value = {'id':'asd', 'projectId':None}
+    mock_post.return_value = {'id': 'asd', 'projectId': None}
 
     with pytest.raises(Exception, match='Project id is not defined'):
         vrt._startBuild()
@@ -170,4 +173,3 @@ def test__submitTestResults__should_submit_test_run(vrt, mock_post):
         },
         {'apiKey': CONFIG.apiKey},
     )
-
