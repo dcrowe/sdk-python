@@ -9,7 +9,7 @@
 ## Usage
 ### Import
 ```python
-from visual_regression_tracker_sdk import VisualRegressionTracker, Config
+from visual_regression_tracker_sdk import VisualRegressionTracker, Config, TestRun
 ```
 
 ### Configure connection
@@ -32,7 +32,7 @@ vrt = VisualRegressionTracker(config)
 ```
 ### Send image
 ```python
-vrt.track(
+vrt.track(TestRun(
     # Name to be displayed
     # Required
     name='Image name',
@@ -57,5 +57,5 @@ vrt.track(
 
     # Optional
     device='PC',
-)
+))
 ```
