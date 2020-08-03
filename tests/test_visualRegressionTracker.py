@@ -2,6 +2,8 @@ import pytest
 from visual_regression_tracker_sdk import \
     Config, VisualRegressionTracker, \
     TestRun, TestRunResult, TestRunStatus
+from visual_regression_tracker_sdk.visualRegressionTracker import \
+    _http_post_json
 
 
 CONFIG = Config(
@@ -116,6 +118,14 @@ def test__startBuild__should_start_build(vrt, mock_post):
     assert vrt.projectId == projectId
 
 
+def test__startBuild__should_start_build_once_only(vrt, mock_post):
+    vrt.buildId = '1312'
+    vrt.projectId = 'asd'
+
+    vrt._startBuild()
+    mock_post.assert_not_called()
+
+
 def test__startBuild__should_throw_if_no_build_id(vrt, mock_post):
     mock_post.return_value = {'id': None, 'projectId': 'projectId'}
 
@@ -173,3 +183,48 @@ def test__submitTestResults__should_submit_test_run(vrt, mock_post):
         },
         {'apiKey': CONFIG.apiKey},
     )
+
+
+def test__http_post_json__success(mocker):
+    expected = {'a': 'b', 'c': 'd'}
+
+    post = mocker.patch('requests.post')
+    response = post.return_value = mocker.Mock()
+    response.status_code = 200
+    response.json.return_value = expected
+
+    actual = _http_post_json('url', {'1': 2}, {2: '3'})
+
+    post.assert_called_once_with('url', json={'1': 2}, headers={2: '3'})
+    assert actual == expected
+
+
+def test__http_post_json__checks_status(mocker):
+    post = mocker.patch('requests.post')
+    response = post.return_value = mocker.Mock()
+    response.status_code = 200
+    response.raise_for_status.side_effect = Exception('oh no')
+
+    with pytest.raises(Exception, match='oh no'):
+        _http_post_json('url', {'1': 2}, {2: '3'})
+
+    post.assert_called_once_with('url', json={'1': 2}, headers={2: '3'})
+
+
+@pytest.mark.parametrize('status_code,expected_match', [
+    (401, 'Unauthorized'),
+    (403, 'Api key not authenticated'),
+    (404, 'Project not found'),
+])
+def test__http_post_json__maps_status_code(
+        mocker, status_code, expected_match):
+    post = mocker.patch('requests.post')
+    response = post.return_value = mocker.Mock()
+    response.status_code = status_code
+    response.json.side_effect = Exception('oh no')
+    response.raise_for_status.side_effect = Exception('oh no')
+
+    with pytest.raises(Exception, match=expected_match):
+        _http_post_json('url', {'1': 2}, {2: '3'})
+
+    post.assert_called_once_with('url', json={'1': 2}, headers={2: '3'})
