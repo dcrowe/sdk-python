@@ -1,5 +1,7 @@
 import requests
-from .types import Config, Build, TestRun, TestRunResult, TestRunStatus
+from .types import \
+    Config, Build, TestRun, TestRunResult, TestRunStatus, \
+    _to_dict, _from_dict
 
 
 class VisualRegressionTracker:
@@ -20,13 +22,12 @@ class VisualRegressionTracker:
             'branchName': self.config.branchName,
             'project': self.config.project,
         }
-
         result = _http_post_json(
             f'{self.config.apiUrl}/builds',
             data,
             self.headers
         )
-        build = Build(**result)
+        build = _from_dict(result, Build)
 
         if build.id:
             self.buildId = build.id
@@ -39,7 +40,7 @@ class VisualRegressionTracker:
             raise Exception("Project id is not defined")
 
     def _submitTestResult(self, test: TestRun) -> TestRunResult:
-        data = dict(test._asdict())
+        data = _to_dict(test)
         data.update(
             buildId=self.buildId,
             projectId=self.projectId,
@@ -52,7 +53,7 @@ class VisualRegressionTracker:
             self.headers
         )
         result['status'] = TestRunStatus(result['status'])
-        testRunResult = TestRunResult(**result)
+        testRunResult = _from_dict(result, TestRunResult)
 
         return testRunResult
 

@@ -1,9 +1,11 @@
 import pytest
 from visual_regression_tracker_sdk import \
     Config, VisualRegressionTracker, \
-    TestRun, TestRunResult, TestRunStatus
+    TestRun, TestRunResult, TestRunStatus, Build
 from visual_regression_tracker_sdk.visualRegressionTracker import \
     _http_post_json
+from visual_regression_tracker_sdk.types import \
+    _to_dict
 
 
 CONFIG = Config(
@@ -34,7 +36,6 @@ def test__track__should_track_success(vrt, mocker):
         device='device',
         viewport='viewport',
         browser='browser',
-        diffTollerancePercent=None,
     )
     testRunResult = TestRunResult(
         url='url',
@@ -60,7 +61,6 @@ def test__track__should_track_no_baseline(vrt, mocker):
         device='device',
         viewport='viewport',
         browser='browser',
-        diffTollerancePercent=None,
     )
     testRunResult = TestRunResult(
         url='url',
@@ -84,7 +84,6 @@ def test__track__should_track_difference(vrt, mocker):
         device='device',
         viewport='viewport',
         browser='browser',
-        diffTollerancePercent=None,
     )
     testRunResult = TestRunResult(
         url='url',
@@ -155,14 +154,13 @@ def test__submitTestResults__should_submit_test_run(vrt, mock_post):
         device='device',
         viewport='viewport',
         browser='browser',
-        diffTollerancePercent=None,
     )
     buildId = '1312'
     projectId = 'asd'
     vrt.buildId = buildId
     vrt.projectId = projectId
 
-    mock_post.return_value = testRunResult._asdict()
+    mock_post.return_value = _to_dict(testRunResult)
 
     result = vrt._submitTestResult(testRun)
 
@@ -176,7 +174,6 @@ def test__submitTestResults__should_submit_test_run(vrt, mock_post):
           'browser': testRun.browser,
           'viewport': testRun.viewport,
           'device': testRun.device,
-          'diffTollerancePercent': None,
           'buildId': buildId,
           'projectId': projectId,
           'branchName': CONFIG.branchName,
